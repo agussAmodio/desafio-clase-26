@@ -1,0 +1,36 @@
+NODE
+
+node en modo fork
+.node start index.js
+
+node en modo cluster 
+.node index.js -m cluster
+
+
+FOREVER
+
+forever en fork
+.forever start index.js
+
+forever en modo cluster
+.forever start index.js -m cluster
+
+
+PM2
+
+PM2 en modo fork 
+.pm2 start index.js --name="fork"
+
+PM2 en modo cluster
+.pm2 start index.js -i <numero de instancias>
+
+PM2 en otro puerto
+.pm2 start index.js --name="fork" -- --port=8082
+
+
+Yargs
+
+-p / Define el puerto que se utlizara 
+-m / define el modo que se utilizara (fork o cluster)
+
+

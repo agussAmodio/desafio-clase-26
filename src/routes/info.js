@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const { Router } = express;
 const router = new Router();
+const os = require("os");
+const numCPUs = require("os").cpus().length;
 
 const info = {
   tittle: "Informacion",
@@ -12,6 +14,7 @@ const info = {
   path: process.cwd(),
   processID: process.pid,
   proyectFolder: __dirname,
+  Cpus: numCPUs,
 };
 
 router.get("/", async (req, res) => {
@@ -24,6 +27,7 @@ router.get("/", async (req, res) => {
   PATH: ${info.path}, <br>
   PROCESS ID: ${info.processID}, <br>
   PROYECT FOLDER: ${info.proyectFolder} <br>
+  CPUS: ${info.Cpus}
   `);
 });
 

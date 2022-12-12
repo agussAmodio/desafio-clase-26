@@ -3,6 +3,8 @@ const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
 const { fork } = require("child_process");
+const numCPUs = require("os").cpus.length;
+const cluster = require("cluster");
 
 const app = express();
 
@@ -10,11 +12,12 @@ const app = express();
 const Yargs = require("yargs/yargs");
 const yargs = Yargs(process.argv.slice(2));
 
-const serverPort = yargs
+const serverData = yargs
   .alias({
     p: "port",
+    m: "modo",
   })
-  .default({ port: 8080 }).argv;
+  .default({ port: 8080, modo: "fork" }).argv;
 
 //sessions
 app.use(
@@ -60,6 +63,7 @@ const server = http.createServer(app);
 
 //Servidor de Socket
 const { Server } = require("socket.io");
+const { signal } = require("nodemon/lib/config/defaults");
 const io = new Server(server);
 
 io.on("connection", (socket) => {
@@ -103,3 +107,30 @@ server.listen(serverPort.port, () => {
   console.log(`Server is run on port ${serverPort.port}`);
 });
 server.on("error", (error) => console.log(`Error en servidor ${error}`));
+
+//cambio de comienzo de servidor
+
+if (serverData.m == "cluster") {
+  if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
+    let index = 0;
+    for (index; index < numCPUs; i++) {
+      cluster.fork();
+    }
+    cluster.on("exit", (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
+  } else {
+    httpServer.listen(serverData.port, () => {
+      console.log(
+        `Servidor http escuchando en el puerto ${serverData.port}! en modo ${serverData.m} en el worker ${process.pid}`
+      );
+    });
+  }
+} else {
+  httpServer.listen(serverData.port, () => {
+    console.log(
+      `Servidor http escuchando en el puerto ${serverData.port}! en modo ${serverData.m}`
+    );
+  });
+}
