@@ -5,8 +5,14 @@ const passport = require("passport");
 const { fork } = require("child_process");
 const numCPUs = require("os").cpus.length;
 const cluster = require("cluster");
+const logs = require("./src/logs/loggers");
 
 const app = express();
+
+//Logs
+const loggerConsola = logs.getLogger("consola");
+const loggerWarn = logs.getLogger("warning");
+const loggerError = logs.getLogger("error");
 
 //Yargs
 const Yargs = require("yargs/yargs");
@@ -55,7 +61,10 @@ app.use("/api/logout", logout);
 const register = require("./src/routes/register");
 app.use("/api/register", register);
 const info = require("./src/routes/info");
+// Sin gzip
 app.use("/api/info", info);
+// Con gzip
+app.use("/api/info/infoGzip", info);
 
 //Servidor HTTP
 const http = require("http");
